@@ -20,6 +20,17 @@ function removeApp {
 	Get-AppXProvisionedPackage -Online | Where DisplayName -like $appName | Remove-AppxProvisionedPackage -Online
 }
 
+function hideTaskbarSearchBox {
+    Write-Host "Hiding Taskbar Search box / button..."
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
+}
+
+# Hide Task View button
+function hideTaskView {
+    Write-Host "Hiding Task View button..."
+    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
+}
+
 $applicationList = @(
 	"Microsoft.BingFinance"
 	"Microsoft.3DBuilder"
@@ -62,6 +73,7 @@ $applicationList = @(
 	"ActiproSoftwareLLC.562882FEEB491" # Code Writer
 	"*.AdobePhotoshopExpress"
 	"*Skype*"
+	"*Spotify*"
 );
 
 foreach ($app in $applicationList) {
@@ -135,6 +147,9 @@ $chocoPackages = @(
 foreach ($package in $chocoPackages) {
 	cinst -y $package
 }
+
+hideTaskbarSearchBox
+hideTaskView
 
 ## TODO:
 ## * redirect documents/pictures folders
