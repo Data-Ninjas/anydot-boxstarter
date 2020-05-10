@@ -1,4 +1,4 @@
-## start http://boxstarter.org/package/nr/url?<URL-TO-RAW-GIST>
+## start http://boxstarter.org/package/url?https://raw.githubusercontent.com/anydot/anydot-boxstarter/master/boxstarter.ps1
 
 function explorerSettings {
 	# Show hidden files, Show protected OS files, Show file extensions
