@@ -109,8 +109,32 @@ If (-Not (Test-Path "HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Adv
 }
 Set-ItemProperty -Path "HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name PeopleBand -Type DWord -Value 0
 
-cinst -y Microsoft-Hyper-V-All --source="'windowsFeatures'"
+## TODO: fix hyper-v features
+cinst -y Microsoft-Hyper-V-All --source=windowsFeatures
 cinst -y Microsoft-Windows-Subsystem-Linux -source windowsFeatures
+
+$chocoPackages = @(
+	"7zip"
+	"f.lux"
+	"git"
+	"GoogleChrome"
+	"hugo-extended"
+	"microsoft-teams.install"
+	"microsoft-windows-terminal"
+	"plantuml"
+	"powershell-core"
+	"skype"
+	"smplayer"
+	"spotify"
+	"sublimetext3"
+	"telegram"
+	"vscode"
+	"vscode-csharp"
+	)
+
+foreach ($package in $chocoPackages) {
+	cinst -y $package
+}
 
 ## TODO:
 ## * redirect documents/pictures folders
