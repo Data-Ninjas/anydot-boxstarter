@@ -76,6 +76,10 @@ $applicationList = @(
 	"*Spotify*"
 );
 
+# https://github.com/mwrock/boxstarter/issues/241#issuecomment-336028348
+$cacheLocation = "$env:TEMP\choco"
+New-Item -Path $cacheLocation -ItemType directory -Force | Out-Null
+
 foreach ($app in $applicationList) {
     removeApp $app
 }
@@ -121,9 +125,10 @@ If (-Not (Test-Path "HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Adv
 }
 Set-ItemProperty -Path "HKCU:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People" -Name PeopleBand -Type DWord -Value 0
 
-## TODO: fix hyper-v features
-cinst -y Microsoft-Hyper-V-All --source=windowsFeatures
-cinst -y Microsoft-Windows-Subsystem-Linux -source windowsFeatures
+$chocoWinFeatures = @(
+	"Microsoft-Hyper-V-All"
+	"Microsoft-Windows-Subsystem-Linux"
+	)
 
 $chocoPackages = @(
 	"7zip"
@@ -144,8 +149,12 @@ $chocoPackages = @(
 	"vscode-csharp"
 	)
 
+foreach ($feature in $chocoWinFeatures) {
+	cinst -y $feature --source=windowsFeatures --cacheLocation=$cacheLocation
+}
+
 foreach ($package in $chocoPackages) {
-	cinst -y $package
+	cinst -y $package --cacheLocation=$cacheLocation
 }
 
 hideTaskbarSearchBox
@@ -155,6 +164,9 @@ hideTaskView
 ## * redirect documents/pictures folders
 ## * unpin default programs (edge, store, smth)
 ## * hide cortana/desktop buttons
+
+#PowerShell help
+Update-Help -ErrorAction SilentlyContinue
 
 if ($env:computername -eq "smth") {
 
