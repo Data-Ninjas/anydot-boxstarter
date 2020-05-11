@@ -77,7 +77,7 @@ $applicationList = @(
 );
 
 # https://github.com/mwrock/boxstarter/issues/241#issuecomment-336028348
-$cacheLocation = "$env:TEMP\choco"
+$cacheLocation = "C:\temp\"
 New-Item -Path $cacheLocation -ItemType directory -Force | Out-Null
 
 foreach ($app in $applicationList) {
@@ -87,7 +87,6 @@ foreach ($app in $applicationList) {
 #--- Enable developer mode on the system ---
 Set-ItemProperty -Path HKLM:\Software\Microsoft\Windows\CurrentVersion\AppModelUnlock -Name AllowDevelopmentWithoutDevLicense -Value 1
 
-Install-WindowsUpdate -acceptEula
 explorerSettings
 
 Disable-BingSearch
@@ -171,3 +170,5 @@ Update-Help -ErrorAction SilentlyContinue
 if ($env:computername -eq "smth") {
 
 }
+
+Install-WindowsUpdate -acceptEula
