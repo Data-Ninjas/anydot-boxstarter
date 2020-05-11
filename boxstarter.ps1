@@ -180,11 +180,11 @@ $chocoPackages = @(
 	)
 
 foreach ($feature in $chocoWinFeatures) {
-	cinst -y $feature --source=windowsFeatures --cacheLocation=$cacheLocation
+	choco upgrade -y $feature --source=windowsFeatures --cacheLocation=$cacheLocation
 }
 
 foreach ($package in $chocoPackages) {
-	cinst -y $package --cacheLocation=$cacheLocation
+	choco upgrade -y $package --cacheLocation=$cacheLocation
 }
 
 hideTaskbarSearchBox
