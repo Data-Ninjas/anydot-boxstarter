@@ -74,6 +74,8 @@ $applicationList = @(
 	"*.AdobePhotoshopExpress"
 	"*Skype*"
 	"*Spotify*"
+	"PLRWorldwideSales.Gardenscapes-NewAcres"
+
 );
 
 # https://github.com/mwrock/boxstarter/issues/241#issuecomment-336028348
@@ -146,6 +148,7 @@ $chocoPackages = @(
 	"telegram"
 	"vscode"
 	"vscode-csharp"
+	"Office365ProPlus"
 	)
 
 foreach ($feature in $chocoWinFeatures) {
