@@ -1,16 +1,47 @@
 ## start http://boxstarter.org/package/url?https://raw.githubusercontent.com/anydot/anydot-boxstarter/master/boxstarter.ps1
 
+function Upsert-Registry {
+	param(
+		$description,
+		$path,
+		$name,
+		$type,
+		$value
+	)
+
+	Write-Host -NoNewLine "$description..."
+
+	If (-Not (Test-Path $path)) {
+		New-Item -Path $path | Out-Null
+		Write-Host -NoNewLine " [path created]"
+	}
+
+	$curvalue = (Get-Item -LiteralPath $path).GetValue($name, $null)
+
+	if ($curvalue -eq $value) {
+		Write-Host " Already set"
+	}
+
+	if ($curvalue -eq $null) {
+		Set-ItemProperty -Path $path -Name $name -Type $type -Value $value | Out-Null
+		Write-Host " Created"
+	}
+
+	if ($curvalue -ne $value) {
+		Set-ItemProperty -Path $path -Name $name -Type $type -Value $value | Out-Null
+		Write-Host " Set"
+	}
+}
+
 function explorerSettings {
 	# Show hidden files, Show protected OS files, Show file extensions
 	Set-WindowsExplorerOptions -EnableShowHiddenFilesFoldersDrives -EnableShowProtectedOSFiles -EnableShowFileExtensions
 
 	#--- File Explorer Settings ---
 	# will expand explorer to the actual folder you're in
-	Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name NavPaneExpandToCurrentFolder -Value 1
-	#adds things back in your left pane like recycle bin
-	Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name NavPaneShowAllFolders -Value 1
-	#opens PC to This PC, not quick access
-	Set-ItemProperty -Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name LaunchTo -Value 1
+	Upsert-Registry "Expand explorer to the actual folder" "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "NavPaneExpandToCurrentFolder" "DWORD" 1
+	Upsert-Registry "Add things back in your left pane like recycle bin" "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "NavPaneShowAllFolders" "DWORD" 
+	Upsert-Registry "Open PC to This PC, not quick access" "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "LaunchTo" "DWORD" 1
 }
 
 function removeApp {
@@ -21,14 +52,11 @@ function removeApp {
 }
 
 function hideTaskbarSearchBox {
-    Write-Host "Hiding Taskbar Search box / button..."
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Type DWord -Value 0
+    Upsert-Registry "Hide Taskbar Search box / button" "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search" "SearchboxTaskbarMode" "DWORD" 0
 }
 
-# Hide Task View button
 function hideTaskView {
-    Write-Host "Hiding Task View button..."
-    Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Type DWord -Value 0
+	Upsert-Registry "Hide Task view button" "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" "ShowTaskViewButton" "DWORD" 0
 }
 
 $applicationList = @(
@@ -113,7 +141,7 @@ Set-ItemProperty -Path HKLM:\Software\Microsoft\PolicyManager\default\WiFi\Allow
 Set-ItemProperty -Path HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search -Name BingSearchEnabled -Type DWord -Value 0
 
 # Start Menu: Disable Cortana 
-New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows' -Name 'Windows Search' -ItemType Key
+New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows' -Name 'Windows Search' -ItemType Key | Out-Null
 New-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name AllowCortana -Type DWORD -Value 0
 
 # Disable Xbox Gamebar
@@ -165,7 +193,7 @@ hideTaskView
 ## TODO:
 ## * redirect documents/pictures folders
 ## * unpin default programs (edge, store, smth)
-## * hide cortana/desktop buttons
+## * test if the feature is installed before we install it ourselves
 
 #PowerShell help
 Update-Help -ErrorAction SilentlyContinue
